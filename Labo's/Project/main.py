@@ -1,11 +1,9 @@
 import os
 import pathlib
-
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import tensorflow as tf
-
 from keras import layers
 from keras import models
 from IPython import display
@@ -15,8 +13,9 @@ seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
-
-DATASET_PATH = 'data/mini_speech_commands'
+BASE_DIR = os.path.dirname(__file__)
+DATASET_PATH = f'{BASE_DIR}\\data\\mini_speech_commands'
+# DATASET_PATH = f'{BASE_DIR}\\data\\speech_commands'
 data_dir = pathlib.Path(DATASET_PATH)
 
 # if not data_dir.exists():
@@ -204,7 +203,7 @@ model.compile(
     metrics=['accuracy'],
 )
 
-EPOCHS = 10
+EPOCHS = 7
 history = model.fit(
     train_spectrogram_ds,
     validation_data=val_spectrogram_ds,
