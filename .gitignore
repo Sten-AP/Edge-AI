@@ -1,4 +1,7 @@
 /Labo's/*/env/
+/Labo's/*/data/__MACOSX/
+/Labo's/*/data/mini_speech_commands/
+/Labo's/*/saved/
 /Labo's/*/_venv/
 /Labo's/*/venv/
 /Labo's/*/__pycache__/

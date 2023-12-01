@@ -26,17 +26,6 @@ ctg_names = [
 'tank', 'telephone', 'television', 'tiger', 'tractor', 'train', 'trout', 'tulip', 'turtle', 'wardrobe', 'whale', 'willow_tree', 'wolf', 'woman', 'worm' 
 ]
 
-def toon9():
-	plt.figure(figsize=(4,4))
-	for i in range(9):
-		plt.subplot(3,3,i+1)
-		plt.xticks( [ ] )
-		plt.yticks( [ ] )
-		plt.grid(False)
-		plt.imshow( train_img[ i ], cmap=plt.cm.binary )
-		plt.xlabel( ctg_names [ train_labels[ i ] [0] ] )
-	plt.show()
-
 model = keras.models.Sequential( ) 
 filtersL=32 
 kernelsL=(3,3)
@@ -48,7 +37,6 @@ model.add(layers.Conv2D(filtersL, kernelsL, activation="relu"))
 model.add(layers.MaxPool2D(poolsizeL))
 model.add(layers.Flatten())
 model.add(layers.Dense(128, activation="relu"))
-model.add(layers.Dense(64, activation="relu"))
 model.add(layers.Dense(100))
 
 loss = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
@@ -76,7 +64,6 @@ model.save(f"{BASE_DIR}/CNN_2")
 # epochs=20; batchsize= 64; learning_rate=0.0005; layers.Dense=64; loss: 2.2824->2.5878 	acc: 0.4143->0.3508
 # epochs=20; batchsize=128; learning_rate=0.0005; layers.Dense=64; loss: 2.3486->2.6018 	acc: 0.4033->0.3515
 # epochs=20; batchsize= 64; learning_rate= 0.001; layers.Dense=64; loss: 2.0670->2.6472 	acc: 0.4593->0.3566
-# epochs=20; batchsize=128; learning_rate=0.0005; layers.Dense=128+64; loss: 2.1978->2.5731 acc: 0.4277->0.3593
 # epochs=40; batchsize=128; learning_rate= 0.001; layers.Dense=64; loss: 2.0049->2.5931 	acc: 0.4697->0.3617
 # epochs=40; batchsize= 64; learning_rate=0.0005; layers.Dense=64; loss: 2.0725->2.5664 	acc: 0.4577->0.3658
 # epochs=40; batchsize= 64; learning_rate= 0.001; layers.Dense=64; loss: 1.8451->2.6522 	acc: 0.5058->0.3659
