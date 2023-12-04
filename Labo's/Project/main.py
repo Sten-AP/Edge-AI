@@ -8,31 +8,32 @@ from keras import layers
 from keras import models
 from IPython import display
 
-# Set the seed value for experiment reproducibility.
 seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
+EPOCHS = 7
+
 BASE_DIR = os.path.dirname(__file__)
 DATASET_PATH = f'{BASE_DIR}\\data\\mini_speech_commands'
 # DATASET_PATH = f'{BASE_DIR}\\data\\speech_commands'
-data_dir = pathlib.Path(DATASET_PATH)
+DATA_DIR = pathlib.Path(DATASET_PATH)
 
-# if not data_dir.exists():
-#   tf.keras.utils.get_file(
-#       'mini_speech_commands.zip',
-#       origin="http://storage.googleapis.com/download.tensorflow.org/data/mini_speech_commands.zip",
-#       extract=True,
-#       cache_dir='.', cache_subdir='data')
+if not DATA_DIR.exists():
+  tf.keras.utils.get_file(
+      'mini_speech_commands.zip',
+      origin="http://storage.googleapis.com/download.tensorflow.org/data/mini_speech_commands.zip",
+      extract=True,
+      cache_dir='.', cache_subdir='data')
   
 
-commands = np.array(tf.io.gfile.listdir(str(data_dir)))
+commands = np.array(tf.io.gfile.listdir(str(DATA_DIR)))
 commands = commands[(commands != 'README.md') & (commands != '.DS_Store')]
 print('Commands:', commands)
 
 
 train_ds, val_ds = tf.keras.utils.audio_dataset_from_directory(
-    directory=data_dir,
+    directory=DATA_DIR,
     batch_size=64,
     validation_split=0.2,
     seed=0,
@@ -203,7 +204,6 @@ model.compile(
     metrics=['accuracy'],
 )
 
-EPOCHS = 7
 history = model.fit(
     train_spectrogram_ds,
     validation_data=val_spectrogram_ds,
@@ -244,7 +244,7 @@ plt.ylabel('Label')
 plt.show()
 
 
-x = data_dir/'no/01bb6a2a_nohash_0.wav'
+x = DATA_DIR/'no/01bb6a2a_nohash_0.wav'
 x = tf.io.read_file(str(x))
 x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
 x = tf.squeeze(x, axis=-1)
@@ -292,9 +292,8 @@ class ExportModel(tf.Module):
             'class_names': class_names}
     
 export = ExportModel(model)
-export(tf.constant(str(data_dir/'no/01bb6a2a_nohash_0.wav')))
+export(tf.constant(str(DATA_DIR/'no/01bb6a2a_nohash_0.wav')))
 
 
-tf.saved_model.save(export, "saved")
-imported = tf.saved_model.load("saved")
-imported(waveform[tf.newaxis, :])
+# tf.saved_model.save(export, "model")
+model.save(f"{BASE_DIR}/model")

@@ -5,15 +5,35 @@ import time
 import pyaudio
 import wave
 import os
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+import keras
 
+seed = 42
+tf.random.set_seed(seed)
+np.random.seed(seed)
 
 THRESHOLD = 500
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 RATE = 44100
 BASE_DIR = os.path.dirname(__file__)
-DATASET_PATH = f'{BASE_DIR}\\data\\audio_input'
+DATASET_PATH = f'{BASE_DIR}\\data'
 
+model = keras.models.load_model(f"{BASE_DIR}/model")
+
+def get_spectrogram(waveform):
+    # Convert the waveform to a spectrogram via a STFT.
+    spectrogram = tf.signal.stft(
+        waveform, frame_length=255, frame_step=128)
+    # Obtain the magnitude of the STFT.
+    spectrogram = tf.abs(spectrogram)
+    # Add a `channels` dimension, so that the spectrogram can be used
+    # as image-like input data with convolution layers (which expect
+    # shape (`batch_size`, `height`, `width`, `channels`).
+    spectrogram = spectrogram[..., tf.newaxis]
+    return spectrogram[tf.newaxis,...]
 
 def is_silent(snd_data):
     "Returns 'True' if below the 'silent' threshold"
@@ -121,10 +141,20 @@ def record_to_file(path):
     wf.close()
 
 if __name__ == '__main__':
-    index = 0
     while True:
         time.sleep(1)
         print("please speak a word into the microphone")
-        record_to_file(f'{DATASET_PATH}/audio_input_{index}.wav')
-        print(f"done - result written to audio_input_{index}.wav")
-        index += 1
+        record_to_file(f'{DATASET_PATH}/audio_input.wav')
+        print(f"done - result written to audio_input.wav")
+        
+        x = f'{DATASET_PATH}/audio_input.wav'
+        x = tf.io.read_file(str(x))
+        x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
+        x = tf.squeeze(x, axis=-1)
+        waveform = x
+        x = get_spectrogram(x)
+
+        prediction = model.predict(x)
+        x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
+        index = (np.argmax(prediction[0]))
+        print(x_labels[index])
