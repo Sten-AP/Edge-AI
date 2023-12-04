@@ -158,3 +158,7 @@ if __name__ == '__main__':
         x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
         index = (np.argmax(prediction[0]))
         print(x_labels[index])
+        
+        plt.bar(x_labels, tf.nn.softmax(prediction[0]))
+        plt.title(x_labels[index])
+        plt.show()
