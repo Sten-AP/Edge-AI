@@ -9,20 +9,43 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import keras
+import librosa
+import librosa.display
+import soundfile as sf
 
 seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
-THRESHOLD = 500
+THRESHOLD = 1000
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
-RATE = 44100
+RATE = 16000
 BASE_DIR = os.path.dirname(__file__)
 DATASET_PATH = f'{BASE_DIR}\\data'
 
 model = keras.models.load_model(f"{BASE_DIR}/model")
 
+def filter_audio(input_file, output_file, threshold):
+    # Laden van het audiobestand
+    y, sr = librosa.load(input_file)
+
+    # Berekenen van de energie van het geluid
+    energy = librosa.feature.rms(y=y)
+
+    # Bepalen van de frames boven de drempelwaarde
+    frames_above_threshold = np.where(energy > threshold)
+
+    # Filteren van de frames boven de drempelwaarde
+    y_filtered = np.zeros_like(y)
+    for frame_idx in frames_above_threshold[1]:
+        start_sample = frame_idx * librosa.samples_to_frames(1)
+        end_sample = (frame_idx + 1) * librosa.samples_to_frames(1)
+        y_filtered[start_sample:end_sample] = y[start_sample:end_sample]
+
+    # Opslaan van het gefilterde geluid
+    sf.write(output_file, y_filtered, RATE)
+    
 def get_spectrogram(waveform):
     # Convert the waveform to a spectrogram via a STFT.
     spectrogram = tf.signal.stft(
@@ -115,7 +138,7 @@ def record():
         elif not silent and not snd_started:
             snd_started = True
 
-        if snd_started and num_silent > 30:
+        if snd_started and num_silent > 10:
             break
 
     sample_width = p.get_sample_size(FORMAT)
@@ -125,7 +148,7 @@ def record():
 
     r = normalize(r)
     r = trim(r)
-    r = add_silence(r, 0.5)
+    r = add_silence(r, 0)
     return sample_width, r
 
 def record_to_file(path):
@@ -148,13 +171,15 @@ if __name__ == '__main__':
         print(f"done - result written to audio_input.wav")
         
         x = f'{DATASET_PATH}/audio_input.wav'
-        x = tf.io.read_file(str(x))
-        x, sample_rate = tf.audio.decode_wav(x, desired_channels=1, desired_samples=16000,)
-        x = tf.squeeze(x, axis=-1)
-        waveform = x
-        x = get_spectrogram(x)
+        y = f'{DATASET_PATH}/audio_input_filtered.wav'
+        filter_audio(x, y, 0)
+        y = f'{DATASET_PATH}/audio_input.wav'
+        y = tf.io.read_file(str(y))
+        y, sample_rate = tf.audio.decode_wav(y, desired_channels=1, desired_samples=16000,)
+        y = tf.squeeze(y, axis=-1)
+        waveform = get_spectrogram(y)
 
-        prediction = model.predict(x)
+        prediction = model.predict(waveform)
         x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
         index = (np.argmax(prediction[0]))
         print(x_labels[index])
