@@ -17,7 +17,7 @@ seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
-THRESHOLD = 1000
+THRESHOLD = 500
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 RATE = 16000
@@ -172,7 +172,7 @@ if __name__ == '__main__':
         
         x = f'{DATASET_PATH}/audio_input.wav'
         y = f'{DATASET_PATH}/audio_input_filtered.wav'
-        filter_audio(x, y, 0)
+        # filter_audio(x, y, 0)
         y = f'{DATASET_PATH}/audio_input.wav'
         y = tf.io.read_file(str(y))
         y, sample_rate = tf.audio.decode_wav(y, desired_channels=1, desired_samples=16000,)
@@ -180,7 +180,8 @@ if __name__ == '__main__':
         waveform = get_spectrogram(y)
 
         prediction = model.predict(waveform)
-        x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
+        # x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
+        x_labels = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
         index = (np.argmax(prediction[0]))
         print(x_labels[index])
         

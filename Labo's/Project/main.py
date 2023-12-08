@@ -12,19 +12,19 @@ seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
-EPOCHS = 7
+EPOCHS = 10
 
 BASE_DIR = os.path.dirname(__file__)
-DATASET_PATH = f'{BASE_DIR}\\data\\mini_speech_commands'
-# DATASET_PATH = f'{BASE_DIR}\\data\\speech_commands'
+# DATASET_PATH = f'{BASE_DIR}\\data\\mini_speech_commands'
+DATASET_PATH = f'{BASE_DIR}\\data\\speech_commands'
 DATA_DIR = pathlib.Path(DATASET_PATH)
 
-if not DATA_DIR.exists():
-  tf.keras.utils.get_file(
-      'mini_speech_commands.zip',
-      origin="http://storage.googleapis.com/download.tensorflow.org/data/mini_speech_commands.zip",
-      extract=True,
-      cache_dir='.', cache_subdir='data')
+# if not DATA_DIR.exists():
+#   tf.keras.utils.get_file(
+#       'mini_speech_commands.zip',
+#       origin="http://storage.googleapis.com/download.tensorflow.org/data/mini_speech_commands.zip",
+#       extract=True,
+#       cache_dir='.', cache_subdir='data')
   
 
 commands = np.array(tf.io.gfile.listdir(str(DATA_DIR)))
@@ -34,7 +34,7 @@ print('Commands:', commands)
 
 train_ds, val_ds = tf.keras.utils.audio_dataset_from_directory(
     directory=DATA_DIR,
-    batch_size=64,
+    batch_size=32,
     validation_split=0.2,
     seed=0,
     output_sequence_length=16000,
@@ -253,7 +253,9 @@ x = get_spectrogram(x)
 x = x[tf.newaxis,...]
 
 prediction = model(x)
-x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
+# x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
+# x_labels = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
+x_labels = ['aardbei', 'boom']
 plt.bar(x_labels, tf.nn.softmax(prediction[0]))
 plt.title('No')
 plt.show()
