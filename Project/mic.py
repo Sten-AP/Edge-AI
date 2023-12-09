@@ -9,9 +9,6 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import keras
-import librosa
-import librosa.display
-import soundfile as sf
 
 seed = 42
 tf.random.set_seed(seed)
@@ -26,26 +23,6 @@ DATASET_PATH = f'{BASE_DIR}\\data'
 
 model = keras.models.load_model(f"{BASE_DIR}/model")
 
-def filter_audio(input_file, output_file, threshold):
-    # Laden van het audiobestand
-    y, sr = librosa.load(input_file)
-
-    # Berekenen van de energie van het geluid
-    energy = librosa.feature.rms(y=y)
-
-    # Bepalen van de frames boven de drempelwaarde
-    frames_above_threshold = np.where(energy > threshold)
-
-    # Filteren van de frames boven de drempelwaarde
-    y_filtered = np.zeros_like(y)
-    for frame_idx in frames_above_threshold[1]:
-        start_sample = frame_idx * librosa.samples_to_frames(1)
-        end_sample = (frame_idx + 1) * librosa.samples_to_frames(1)
-        y_filtered[start_sample:end_sample] = y[start_sample:end_sample]
-
-    # Opslaan van het gefilterde geluid
-    sf.write(output_file, y_filtered, RATE)
-    
 def get_spectrogram(waveform):
     # Convert the waveform to a spectrogram via a STFT.
     spectrogram = tf.signal.stft(
@@ -170,17 +147,13 @@ if __name__ == '__main__':
         record_to_file(f'{DATASET_PATH}/audio_input.wav')
         print(f"done - result written to audio_input.wav")
         
-        x = f'{DATASET_PATH}/audio_input.wav'
-        y = f'{DATASET_PATH}/audio_input_filtered.wav'
-        # filter_audio(x, y, 0)
-        y = f'{DATASET_PATH}/audio_input.wav'
-        y = tf.io.read_file(str(y))
-        y, sample_rate = tf.audio.decode_wav(y, desired_channels=1, desired_samples=16000,)
-        y = tf.squeeze(y, axis=-1)
-        waveform = get_spectrogram(y)
+        input_data = f'{DATASET_PATH}/audio_input.wav'
+        input_data = tf.io.read_file(str(input_data))
+        input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=16000,)
+        input_data = tf.squeeze(input_data, axis=-1)
+        waveform = get_spectrogram(input_data)
 
         prediction = model.predict(waveform)
-        # x_labels = ['no', 'yes', 'down', 'go', 'left', 'up', 'right', 'stop']
         x_labels = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
         index = (np.argmax(prediction[0]))
         print(x_labels[index])
