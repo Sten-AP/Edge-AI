@@ -19,19 +19,13 @@ CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 RATE = 16000
 BASE_DIR = os.path.dirname(__file__)
-DATASET_PATH = f'{BASE_DIR}\\data'
+DATASET_PATH = f'{BASE_DIR}/data'
 
 model = keras.models.load_model(f"{BASE_DIR}/model")
 
 def get_spectrogram(waveform):
-    # Convert the waveform to a spectrogram via a STFT.
-    spectrogram = tf.signal.stft(
-        waveform, frame_length=255, frame_step=128)
-    # Obtain the magnitude of the STFT.
+    spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
-    # Add a `channels` dimension, so that the spectrogram can be used
-    # as image-like input data with convolution layers (which expect
-    # shape (`batch_size`, `height`, `width`, `channels`).
     spectrogram = spectrogram[..., tf.newaxis]
     return spectrogram[tf.newaxis,...]
 
@@ -149,7 +143,7 @@ if __name__ == '__main__':
         
         input_data = f'{DATASET_PATH}/audio_input.wav'
         input_data = tf.io.read_file(str(input_data))
-        input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=16000,)
+        input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=16000)
         input_data = tf.squeeze(input_data, axis=-1)
         waveform = get_spectrogram(input_data)
 
