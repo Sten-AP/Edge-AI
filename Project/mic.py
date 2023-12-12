@@ -1,28 +1,29 @@
+from gpio import toggle_led
+from pyaudio import PyAudio, paInt16
 from sys import byteorder
 from array import array
 from struct import pack
-import time
-import pyaudio
-import wave
-import os
+from time import sleep
+from wave import open
+from os import path
 import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
-import keras
+from numpy import random, argmax
 
 seed = 42
 tf.random.set_seed(seed)
-np.random.seed(seed)
+random.seed(seed)
 
 MAXIMUM = 16384
 THRESHOLD = 2000
 CHUNK_SIZE = 1024
-FORMAT = pyaudio.paInt16
+FORMAT = paInt16
 RATE = 16000
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = path.dirname(__file__)
 DATASET_PATH = f'{BASE_DIR}/data'
+LABELS = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
 
-model = keras.models.load_model(f"{BASE_DIR}/model")
+interpreter = tf.lite.Interpreter(model_path=f"{BASE_DIR}/model.tflite")
+interpreter.allocate_tensors()
 
 def get_spectrogram(waveform):
     spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
@@ -86,7 +87,7 @@ def record():
     blank sound to make sure VLC et al can play 
     it without getting chopped off.
     """
-    p = pyaudio.PyAudio()
+    p = PyAudio()
     stream = p.open(format=FORMAT, channels=1, rate=RATE,
         input=True, output=True,
         frames_per_buffer=CHUNK_SIZE)
@@ -96,8 +97,7 @@ def record():
 
     r = array('h')
 
-    while 1:
-        # little endian, signed short
+    while True:
         snd_data = array('h', stream.read(CHUNK_SIZE))
         if byteorder == 'big':
             snd_data.byteswap()
@@ -128,7 +128,7 @@ def record_to_file(path):
     sample_width, data = record()
     data = pack('<' + ('h'*len(data)), *data)
 
-    wf = wave.open(path, 'wb')
+    wf = open(path, 'wb')
     wf.setnchannels(1)
     wf.setsampwidth(sample_width)
     wf.setframerate(RATE)
@@ -137,7 +137,7 @@ def record_to_file(path):
 
 if __name__ == '__main__':
     while True:
-        time.sleep(1)
+        sleep(1)
         print("please speak a word into the microphone")
         record_to_file(f'{DATASET_PATH}/audio_input.wav')
         print(f"done - result written to audio_input.wav")
@@ -147,12 +147,13 @@ if __name__ == '__main__':
         input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=16000)
         input_data = tf.squeeze(input_data, axis=-1)
         waveform = get_spectrogram(input_data)
-
-        prediction = model.predict(waveform)
-        x_labels = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
-        index = (np.argmax(prediction[0]))
-        print(x_labels[index])
         
-        # plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-        # plt.title(x_labels[index])
-        # plt.show()
+        input_details = interpreter.get_input_details()
+        interpreter.set_tensor(input_details[0]["index"], waveform)
+        interpreter.invoke()
+
+        output_details = interpreter.get_output_details()
+        output_data = interpreter.get_tensor(output_details[0]["index"])
+        index = argmax(output_data[0])
+        print(LABELS[index])
+        toggle_led(LABELS[index])

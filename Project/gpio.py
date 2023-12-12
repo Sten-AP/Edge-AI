@@ -1,16 +1,26 @@
 from periphery import GPIO
-import time
+from time import sleep
+
+x_labels = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
 
 led_rood = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
-# led_groen = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
-# led_geel = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
+led_groen = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
+led_geel = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 
-try:
-  while True:
-    led_rood.write(True)
-    time.sleep(1)
-    led_rood.write(False)
-    time.sleep(1)
-finally:
-  led_rood.write(False)
-  led_rood.close()
+def toggle_led(prediction):
+    if prediction == 'aardbei':
+        led_rood.write(True) 
+    if prediction == 'kers':
+        led_rood.write(False)     
+
+    if prediction == 'boom':
+        led_groen.write(True)     
+    if prediction == 'gras':
+        led_groen.write(False)
+
+    if prediction == 'kaas':
+        led_geel.write(True)     
+    if prediction == 'zon':
+        led_geel.write(False)
+    
+    sleep(1)

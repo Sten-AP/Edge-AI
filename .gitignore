@@ -2,9 +2,10 @@
 /Labo's/*/_venv/
 /Labo's/*/venv/
 
-/Project/env/
-/Project/_venv/
-/Project/venv/
+/*/env/
+/*/_venv/
+/*/venv/
+/*/__pycache__/
 
 /Labo's/*/data/__MACOSX/
 /Labo's/*/data/mini_speech_commands/
