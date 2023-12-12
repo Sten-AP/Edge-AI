@@ -1,8 +1,6 @@
 from periphery import GPIO
 from time import sleep
 
-x_labels = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
-
 led_rood = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 led_groen = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 led_geel = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
