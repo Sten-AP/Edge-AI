@@ -14,7 +14,8 @@ seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
-THRESHOLD = 500
+MAXIMUM = 16384
+THRESHOLD = 2000
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 RATE = 16000
@@ -31,11 +32,11 @@ def get_spectrogram(waveform):
 
 def is_silent(snd_data):
     "Returns 'True' if below the 'silent' threshold"
+    print(max(snd_data))
     return max(snd_data) < THRESHOLD
 
 def normalize(snd_data):
     "Average the volume out"
-    MAXIMUM = 16384
     times = float(MAXIMUM)/max(abs(i) for i in snd_data)
 
     r = array('h')
@@ -152,6 +153,6 @@ if __name__ == '__main__':
         index = (np.argmax(prediction[0]))
         print(x_labels[index])
         
-        plt.bar(x_labels, tf.nn.softmax(prediction[0]))
-        plt.title(x_labels[index])
-        plt.show()
+        # plt.bar(x_labels, tf.nn.softmax(prediction[0]))
+        # plt.title(x_labels[index])
+        # plt.show()

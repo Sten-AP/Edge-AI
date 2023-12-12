@@ -118,6 +118,7 @@ model = models.Sequential([
     norm_layer,
     layers.Conv2D(32, 3, activation='relu'),
     layers.Conv2D(64, 3, activation='relu'),
+    layers.Conv2D(128, 3, activation='relu'),
     layers.MaxPooling2D(),
     layers.Dropout(0.25),
     layers.Flatten(),
@@ -158,7 +159,7 @@ plt.legend(['accuracy', 'val_accuracy'])
 plt.ylim([0, 100])
 plt.xlabel('Epoch')
 plt.ylabel('Accuracy [%]')
-# plt.show()
+plt.show()
 
 y_pred = model.predict(test_spectrogram_ds)
 y_pred = tf.argmax(y_pred, axis=1)
@@ -172,9 +173,15 @@ sns.heatmap(confusion_mtx,
             annot=True, fmt='g')
 plt.xlabel('Prediction')
 plt.ylabel('Label')
-# plt.show()
+plt.show()
 
 save = input("Save model? (Y/N)\nAntwoord: ")
 if save.lower() == "y":
     model.save(f"{BASE_DIR}/model")
+    
+    converter = tf.lite.TFLiteConverter.from_saved_model(f"{BASE_DIR}/model")
+    tflite_model = converter.convert()
+
+    with open(f'{BASE_DIR}/model.tflite', 'wb') as f:
+        f.write(tflite_model)
     print("Model saved")

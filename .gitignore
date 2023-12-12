@@ -1,6 +1,11 @@
-/*/*/env/
-/*/*/_venv/
-/*/*/venv/
+/Labo's/*/env/
+/Labo's/*/_venv/
+/Labo's/*/venv/
+
+/Project/env/
+/Project/_venv/
+/Project/venv/
+
 /Labo's/*/data/__MACOSX/
 /Labo's/*/data/mini_speech_commands/
 /Labo's/*/data/audio_input.wav
