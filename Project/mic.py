@@ -35,6 +35,7 @@ def get_spectrogram(waveform):
 
 def is_silent(snd_data):
     "Returns 'True' if below the 'silent' threshold"
+    print(max(snd_data))
     return max(snd_data) < THRESHOLD
 
 def normalize(snd_data):
