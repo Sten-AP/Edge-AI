@@ -5,6 +5,7 @@ led_geel = GPIO("/dev/gpiochip4", 13, "out")  # pin 36
 led_rood = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 
 def toggle_led(prediction):
+    print(prediction)
     if prediction == 'aardbei':
         led_rood.write(True) 
     if prediction == 'kers':

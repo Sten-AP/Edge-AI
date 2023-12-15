@@ -35,7 +35,6 @@ def get_spectrogram(waveform):
 
 def is_silent(snd_data):
     "Returns 'True' if below the 'silent' threshold"
-    print(max(snd_data))
     return max(snd_data) < THRESHOLD
 
 def normalize(snd_data):
@@ -167,7 +166,7 @@ if __name__ == '__main__':
         # plt.title(prediction)
         # plt.show()
         
-        if confidense > 75:
+        if confidense > 50:
             print(f"Confident enough about {prediction}\n")
             toggle_led(LABELS[index])
         else:
