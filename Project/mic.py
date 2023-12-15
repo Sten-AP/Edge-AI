@@ -161,7 +161,7 @@ if __name__ == '__main__':
         prediction = LABELS[index]
         confidense = int(tf.nn.softmax(output_data[0])[index].numpy() * 100)
         
-        print(f"Prediction: {prediction} - Confidense: {confidense}%")
+        print(f"Prediction: {prediction} - Confidence: {confidense}%")
         # plt.bar(LABELS, tf.nn.softmax(output_data[0]))
         # plt.title(prediction)
         # plt.show()
