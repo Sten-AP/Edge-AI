@@ -5,7 +5,7 @@ from array import array
 from struct import pack
 from time import sleep
 from wave import open
-from os import path
+import os
 import tensorflow as tf
 from numpy import random, argmax
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ THRESHOLD = 2000
 CHUNK_SIZE = 1024
 FORMAT = paInt16
 RATE = 16000
-BASE_DIR = path.dirname(__file__)
+BASE_DIR = os.getcwdb()
 DATASET_PATH = f'{BASE_DIR}/data'
 LABELS = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
 
