@@ -1,5 +1,4 @@
 from periphery import GPIO
-from time import sleep
 
 led_groen = GPIO("/dev/gpiochip0", 8, "out")  # pin 31
 led_geel = GPIO("/dev/gpiochip4", 13, "out")  # pin 36
@@ -20,5 +19,3 @@ def toggle_led(prediction):
         led_geel.write(True)     
     if prediction == 'zon':
         led_geel.write(False)
-    
-    sleep(1)
