@@ -10,7 +10,7 @@ import tensorflow as tf
 from numpy import random, argmax
 import matplotlib.pyplot as plt
 
-
+print(tf.__version__)
 seed = 42
 tf.random.set_seed(seed)
 random.seed(seed)

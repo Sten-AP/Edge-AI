@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import tensorflow as tf
-from keras import layers
-from keras import models
+from keras import layers, models
 from IPython import display
 
 seed = 42
