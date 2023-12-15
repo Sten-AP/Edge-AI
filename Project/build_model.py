@@ -25,7 +25,7 @@ train_ds, val_ds = tf.keras.utils.audio_dataset_from_directory(
     batch_size=32,
     validation_split=0.2,
     seed=0,
-    output_sequence_length=16000,
+    output_sequence_length=48000,
     subset='both')
 
 label_names = np.array(train_ds.class_names)
@@ -69,7 +69,7 @@ for i in range(3):
     print('Waveform shape:', waveform.shape)
     print('Spectrogram shape:', spectrogram.shape)
     print('Audio playback')
-    display.display(display.Audio(waveform, rate=16000))
+    display.display(display.Audio(waveform, rate=48000))
 
 
 def plot_spectrogram(spectrogram, ax):
