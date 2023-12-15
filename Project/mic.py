@@ -10,7 +10,6 @@ import tensorflow as tf
 from numpy import random, argmax
 import matplotlib.pyplot as plt
 
-print(tf.__version__)
 seed = 42
 tf.random.set_seed(seed)
 random.seed(seed)
@@ -20,7 +19,7 @@ THRESHOLD = 2000
 CHUNK_SIZE = 1024
 FORMAT = paInt16
 RATE = 16000
-BASE_DIR = os.getcwdb()
+BASE_DIR = str(os.getcwdb())[2:-1]
 DATASET_PATH = f'{BASE_DIR}/data'
 LABELS = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
 
