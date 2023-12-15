@@ -93,7 +93,7 @@ def record():
     p = PyAudio()
     stream = p.open(format=FORMAT, channels=1, rate=RATE,
         input=True, output=True,
-        frames_per_buffer=CHUNK_SIZE)
+        frames_per_buffer=CHUNK_SIZE, input_device_index=0)
 
     num_silent = 0
     snd_started = False
