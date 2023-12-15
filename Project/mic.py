@@ -8,6 +8,8 @@ from wave import open
 from os import path
 import tensorflow as tf
 from numpy import random, argmax
+import matplotlib.pyplot as plt
+
 
 seed = 42
 tf.random.set_seed(seed)
@@ -33,7 +35,6 @@ def get_spectrogram(waveform):
 
 def is_silent(snd_data):
     "Returns 'True' if below the 'silent' threshold"
-    print(max(snd_data))
     return max(snd_data) < THRESHOLD
 
 def normalize(snd_data):
@@ -53,6 +54,7 @@ def trim(snd_data):
 
         for i in snd_data:
             if not snd_started and abs(i)>THRESHOLD:
+                print(abs(i))
                 snd_started = True
                 r.append(i)
 
@@ -110,7 +112,7 @@ def record():
         elif not silent and not snd_started:
             snd_started = True
 
-        if snd_started and num_silent > 10:
+        if snd_started and num_silent > 5:
             break
 
     sample_width = p.get_sample_size(FORMAT)
@@ -140,7 +142,7 @@ if __name__ == '__main__':
         sleep(1)
         print("please speak a word into the microphone")
         record_to_file(f'{DATASET_PATH}/audio_input.wav')
-        print(f"done - result written to audio_input.wav")
+        print(f"done - result written to audio_input.wav\n")
         
         input_data = f'{DATASET_PATH}/audio_input.wav'
         input_data = tf.io.read_file(str(input_data))
@@ -154,6 +156,19 @@ if __name__ == '__main__':
 
         output_details = interpreter.get_output_details()
         output_data = interpreter.get_tensor(output_details[0]["index"])
+        
         index = argmax(output_data[0])
-        print(LABELS[index])
-        toggle_led(LABELS[index])
+        prediction = LABELS[index]
+        confidense = int(tf.nn.softmax(output_data[0])[index].numpy() * 100)
+        
+        print(f"Prediction: {prediction} - Confidense: {confidense}%")
+        # plt.bar(LABELS, tf.nn.softmax(output_data[0]))
+        # plt.title(prediction)
+        # plt.show()
+        
+        if confidense > 75:
+            print(f"Confident enough about {prediction}\n")
+            toggle_led(LABELS[index])
+        else:
+            print(f"Not confident about {prediction}...\n")
+            

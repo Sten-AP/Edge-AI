@@ -1,9 +1,9 @@
 from periphery import GPIO
 from time import sleep
 
+led_groen = GPIO("/dev/gpiochip0", 8, "out")  # pin 31
+led_geel = GPIO("/dev/gpiochip4", 13, "out")  # pin 36
 led_rood = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
-led_groen = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
-led_geel = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 
 def toggle_led(prediction):
     if prediction == 'aardbei':
