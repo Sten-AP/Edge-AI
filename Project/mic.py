@@ -9,6 +9,7 @@ import os
 import tensorflow as tf
 from numpy import random, argmax
 import matplotlib.pyplot as plt
+import tflite_runtime.interpreter as tflite
 
 seed = 42
 tf.random.set_seed(seed)
@@ -23,7 +24,7 @@ BASE_DIR = str(os.getcwdb())[2:-1]
 DATASET_PATH = f'{BASE_DIR}/data'
 LABELS = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
 
-interpreter = tf.lite.Interpreter(model_path=f"{BASE_DIR}/model.tflite")
+interpreter = tflite.Interpreter(model_path=f"{BASE_DIR}/model.tflite")
 interpreter.allocate_tensors()
 
 def get_spectrogram(waveform):
