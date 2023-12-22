@@ -109,6 +109,7 @@ def record():
             break
 
     sample_width = p.get_sample_size(FORMAT)
+    sleep(0.5)
     stream.stop_stream()
     stream.close()
     p.terminate()
@@ -127,7 +128,6 @@ def record_to_file(path):
     wf.setsampwidth(sample_width)
     wf.setframerate(RATE)
     wf.writeframes(data)
-    sleep(1)
     wf.close()
 
 def main():
