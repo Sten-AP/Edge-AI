@@ -55,7 +55,7 @@ def trim(snd_data):
         r = array('h')
 
         for i in snd_data:
-            if not snd_started and max(i)>THRESHOLD:
+            if not snd_started and abs(i)>THRESHOLD:
                 snd_started = True
                 r.append(i)
 
