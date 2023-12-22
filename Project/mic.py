@@ -1,4 +1,4 @@
-from gpio import toggle_led
+from gpio import toggle_led, led_rood, led_geel, led_groen
 from pyaudio import PyAudio, paInt16
 from sys import byteorder
 from array import array
@@ -136,7 +136,7 @@ def record_to_file(path):
     wf.setsampwidth(sample_width)
     wf.setframerate(RATE)
     wf.writeframes(data)
-    sleep(1)
+    sleep(0.5)
     wf.close()
 
 def main():
@@ -169,12 +169,18 @@ def main():
         print(f"Not confident about {prediction}...\n")
 
 if __name__ == '__main__':
-    while True:
-        sleep(1)
-        print("please speak a word into the microphone")
-        record_to_file(f'{DATASET_PATH}/audio_input.wav')
-        print(f"done - result written to audio_input.wav\n")
-        
-        predictThread = threading.Thread(target=main)
-        predictThread.start()
+    try:
+        while True:
+            sleep(1)
+            print("please speak a word into the microphone")
+            record_to_file(f'{DATASET_PATH}/audio_input.wav')
+            print(f"done - result written to audio_input.wav\n")
             
+            predictThread = threading.Thread(target=main)
+            predictThread.start()
+    except KeyboardInterrupt as e:
+        print("Shutdown")
+        # Alle LEDs uitzetten
+        led_rood.write(False)     
+        led_groen.write(False)
+        led_geel.write(False)
