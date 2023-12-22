@@ -6,22 +6,27 @@ led_rood = GPIO("/dev/gpiochip2", 13, "out")  # pin 37
 
 def toggle_led(prediction):
     try:
-        if prediction == 'aardbei':
-            led_rood.write(True) 
-        if prediction == 'kers':
-            led_rood.write(False)     
-
+        # Groene LED aan-/uitzetten
         if prediction == 'boom':
             led_groen.write(True)     
         if prediction == 'gras':
             led_groen.write(False)
 
+        # Gele LED aan-/uitzetten
         if prediction == 'kaas':
             led_geel.write(True)     
         if prediction == 'zon':
             led_geel.write(False)
+            
+        # Rode LED aan-/uitzetten
+        if prediction == 'aardbei':
+            led_rood.write(True) 
+        if prediction == 'kers':
+            led_rood.write(False)     
+            
     except KeyboardInterrupt as e:
         print("Shutdown")
+        # Alle LEDs uitzetten
         led_rood.write(False)     
         led_groen.write(False)
         led_geel.write(False)
