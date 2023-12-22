@@ -127,6 +127,7 @@ def record_to_file(path):
     wf.setsampwidth(sample_width)
     wf.setframerate(RATE)
     wf.writeframes(data)
+    sleep(1)
     wf.close()
 
 def main():
