@@ -17,13 +17,13 @@ tf.random.set_seed(seed)
 random.seed(seed)
 
 MAXIMUM = 16384
-THRESHOLD = 2000
+THRESHOLD = 4000
 CHUNK_SIZE = 1024
 FORMAT = paInt16
 RATE = 48000
 BASE_DIR = str(os.getcwdb())[2:-1]
 DATASET_PATH = f'{BASE_DIR}/data'
-LABELS = ['aardbei', 'boom', 'disco', 'gras', 'kaas', 'kers', 'zon']
+LABELS = ['aardbei', 'boom', 'gras', 'kaas', 'kers', 'zon']
 
 interpreter = tflite.Interpreter(model_path=f"{BASE_DIR}/model.tflite")
 interpreter.allocate_tensors()
@@ -55,7 +55,6 @@ def trim(snd_data):
 
         for i in snd_data:
             if not snd_started and abs(i)>THRESHOLD:
-                print(abs(i))
                 snd_started = True
                 r.append(i)
 
