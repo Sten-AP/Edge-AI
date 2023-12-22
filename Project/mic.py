@@ -152,7 +152,7 @@ def main():
     # plt.title(prediction)
     # plt.show()
         
-    if confidense > 50:
+    if confidense > 70:
         print(f"Confident enough about {prediction}\n")
         toggle_led(LABELS[index])
     else:
