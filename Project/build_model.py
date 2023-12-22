@@ -52,7 +52,6 @@ for example_audio, example_labels in train_ds.take(1):
 
 label_names[[1, 1, 3, 0]]
 
-
 def get_spectrogram(waveform):
     spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
@@ -84,6 +83,30 @@ def plot_spectrogram(spectrogram, ax):
     Y = range(height)
     ax.pcolormesh(X, Y, log_spec)
 
+#Plot audio waveforms
+plt.figure(figsize=(16, 10))
+rows = 3
+cols = 2
+n = rows * cols
+for i in range(n):
+    plt.subplot(rows, cols, i+1)
+    audio_signal = example_audio[i]
+    plt.plot(audio_signal)
+    plt.title(label_names[example_labels[i]])
+    plt.yticks(np.arange(-1.2, 1.2, 0.2))
+    plt.ylim([-1.1, 1.1])
+plt.show()
+
+fig, axes = plt.subplots(2, figsize=(12, 8))
+timescale = np.arange(waveform.shape[0])
+axes[0].plot(timescale, waveform.numpy())
+axes[0].set_title('Waveform')
+axes[0].set_xlim([0, 48000])
+
+plot_spectrogram(spectrogram.numpy(), axes[1])
+axes[1].set_title('Spectrogram')
+plt.suptitle(label.title())
+plt.show()
 
 def make_spec_ds(ds):
     return ds.map(
