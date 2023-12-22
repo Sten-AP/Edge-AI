@@ -25,7 +25,7 @@ train_ds, val_ds = tf.keras.utils.audio_dataset_from_directory(
     batch_size=32,
     validation_split=0.2,
     seed=0,
-    output_sequence_length=48000,
+    output_sequence_length=44100,
     subset='both')
 
 label_names = np.array(train_ds.class_names)
@@ -84,29 +84,29 @@ def plot_spectrogram(spectrogram, ax):
     ax.pcolormesh(X, Y, log_spec)
 
 #Plot audio waveforms
-plt.figure(figsize=(16, 10))
-rows = 3
-cols = 2
-n = rows * cols
-for i in range(n):
-    plt.subplot(rows, cols, i+1)
-    audio_signal = example_audio[i]
-    plt.plot(audio_signal)
-    plt.title(label_names[example_labels[i]])
-    plt.yticks(np.arange(-1.2, 1.2, 0.2))
-    plt.ylim([-1.1, 1.1])
-plt.show()
+# plt.figure(figsize=(16, 10))
+# rows = 3
+# cols = 2
+# n = rows * cols
+# for i in range(n):
+#     plt.subplot(rows, cols, i+1)
+#     audio_signal = example_audio[i]
+#     plt.plot(audio_signal)
+#     plt.title(label_names[example_labels[i]])
+#     plt.yticks(np.arange(-1.2, 1.2, 0.2))
+#     plt.ylim([-1.1, 1.1])
+# plt.show()
 
-fig, axes = plt.subplots(2, figsize=(12, 8))
-timescale = np.arange(waveform.shape[0])
-axes[0].plot(timescale, waveform.numpy())
-axes[0].set_title('Waveform')
-axes[0].set_xlim([0, 48000])
+# fig, axes = plt.subplots(2, figsize=(12, 8))
+# timescale = np.arange(waveform.shape[0])
+# axes[0].plot(timescale, waveform.numpy())
+# axes[0].set_title('Waveform')
+# axes[0].set_xlim([0, 44100])
 
-plot_spectrogram(spectrogram.numpy(), axes[1])
-axes[1].set_title('Spectrogram')
-plt.suptitle(label.title())
-plt.show()
+# plot_spectrogram(spectrogram.numpy(), axes[1])
+# axes[1].set_title('Spectrogram')
+# plt.suptitle(label.title())
+# plt.show()
 
 def make_spec_ds(ds):
     return ds.map(
@@ -144,7 +144,7 @@ model = models.Sequential([
     layers.MaxPooling2D(),
     layers.Dropout(0.25),
     layers.Flatten(),
-    layers.Dense(64, activation='relu'),
+    layers.Dense(32, activation='relu'),
     layers.Dropout(0.5),
     layers.Dense(num_labels),
 ])
