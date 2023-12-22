@@ -55,7 +55,7 @@ def trim(snd_data):
         r = array('h')
 
         for i in snd_data:
-            if not snd_started and abs(i)>THRESHOLD:
+            if not snd_started and max(i)>THRESHOLD:
                 snd_started = True
                 r.append(i)
 
@@ -71,14 +71,6 @@ def trim(snd_data):
     snd_data = _trim(snd_data)
     snd_data.reverse()
     return snd_data
-
-def add_silence(snd_data, seconds):
-    "Add silence to the start and end of 'snd_data' of length 'seconds' (float)"
-    silence = [0] * int(seconds * RATE)
-    r = array('h', silence)
-    r.extend(snd_data)
-    r.extend(silence)
-    return r
 
 def record():
     """
@@ -123,7 +115,6 @@ def record():
 
     r = normalize(r)
     r = trim(r)
-    r = add_silence(r, 0)
     return sample_width, r
 
 def record_to_file(path):
@@ -136,7 +127,6 @@ def record_to_file(path):
     wf.setsampwidth(sample_width)
     wf.setframerate(RATE)
     wf.writeframes(data)
-    sleep(0.5)
     wf.close()
 
 def main():
