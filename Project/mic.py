@@ -10,6 +10,7 @@ import tensorflow as tf
 from numpy import random, argmax
 import matplotlib.pyplot as plt
 import tflite_runtime.interpreter as tflite
+import threading
 
 seed = 42
 tf.random.set_seed(seed)
@@ -137,6 +138,35 @@ def record_to_file(path):
     wf.writeframes(data)
     wf.close()
 
+def main():
+    input_data = f'{DATASET_PATH}/audio_input.wav'
+    input_data = tf.io.read_file(str(input_data))
+    input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=48000)
+    input_data = tf.squeeze(input_data, axis=-1)
+    waveform = get_spectrogram(input_data)
+        
+    input_details = interpreter.get_input_details()
+    interpreter.set_tensor(input_details[0]["index"], waveform)
+    interpreter.invoke()
+
+    output_details = interpreter.get_output_details()
+    output_data = interpreter.get_tensor(output_details[0]["index"])
+        
+    index = argmax(output_data[0])
+    prediction = LABELS[index]
+    confidense = int(tf.nn.softmax(output_data[0])[index].numpy() * 100)
+        
+    print(f"Prediction: {prediction} - Confidence: {confidense}%")
+    # plt.bar(LABELS, tf.nn.softmax(output_data[0]))
+    # plt.title(prediction)
+    # plt.show()
+        
+    if confidense > 50:
+        print(f"Confident enough about {prediction}\n")
+        toggle_led(LABELS[index])
+    else:
+        print(f"Not confident about {prediction}...\n")
+
 if __name__ == '__main__':
     while True:
         sleep(1)
@@ -144,31 +174,6 @@ if __name__ == '__main__':
         record_to_file(f'{DATASET_PATH}/audio_input.wav')
         print(f"done - result written to audio_input.wav\n")
         
-        input_data = f'{DATASET_PATH}/audio_input.wav'
-        input_data = tf.io.read_file(str(input_data))
-        input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=48000)
-        input_data = tf.squeeze(input_data, axis=-1)
-        waveform = get_spectrogram(input_data)
-        
-        input_details = interpreter.get_input_details()
-        interpreter.set_tensor(input_details[0]["index"], waveform)
-        interpreter.invoke()
-
-        output_details = interpreter.get_output_details()
-        output_data = interpreter.get_tensor(output_details[0]["index"])
-        
-        index = argmax(output_data[0])
-        prediction = LABELS[index]
-        confidense = int(tf.nn.softmax(output_data[0])[index].numpy() * 100)
-        
-        print(f"Prediction: {prediction} - Confidence: {confidense}%")
-        # plt.bar(LABELS, tf.nn.softmax(output_data[0]))
-        # plt.title(prediction)
-        # plt.show()
-        
-        if confidense > 50:
-            print(f"Confident enough about {prediction}\n")
-            toggle_led(LABELS[index])
-        else:
-            print(f"Not confident about {prediction}...\n")
+        predictThread = threading.Thread(target=main)
+        predictThread.start()
             
