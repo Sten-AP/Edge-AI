@@ -142,7 +142,7 @@ def record_to_file(path):
 def main():
     input_data = f'{DATASET_PATH}/audio_input.wav'
     input_data = tf.io.read_file(str(input_data))
-    input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=48000)
+    input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=RATE)
     input_data = tf.squeeze(input_data, axis=-1)
     waveform = get_spectrogram(input_data)
         
