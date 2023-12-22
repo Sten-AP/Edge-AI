@@ -105,11 +105,10 @@ def record():
         elif not silent and not snd_started:
             snd_started = True
 
-        if snd_started and num_silent > 5:
+        if snd_started and num_silent > 10:
             break
 
     sample_width = p.get_sample_size(FORMAT)
-    sleep(0.5)
     stream.stop_stream()
     stream.close()
     p.terminate()
