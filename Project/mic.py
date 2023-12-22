@@ -17,7 +17,7 @@ tf.random.set_seed(seed)
 random.seed(seed)
 
 MAXIMUM = 16384
-THRESHOLD = 4000
+THRESHOLD = 2000
 CHUNK_SIZE = 1024
 FORMAT = paInt16
 RATE = 48000
