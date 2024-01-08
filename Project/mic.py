@@ -124,8 +124,8 @@ def main():
 
     fill = int((RATE - input_data.shape[0]) / 2)
     if not fill < 0:
-    	fill_data = tf.zeros((fill, 1))
-    	input_data = tf.concat([fill_data, input_data, fill_data], axis=0)
+        fill_data = tf.zeros((fill, 1))
+        input_data = tf.concat([fill_data, input_data, fill_data], axis=0)
 
     while input_data.shape[0] < RATE:
         input_data = tf.concat([input_data, tf.zeros((1, 1))], axis=0)
