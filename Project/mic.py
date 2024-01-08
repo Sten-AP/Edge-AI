@@ -28,19 +28,20 @@ LABELS = ['aardbei', 'boom', 'gras', 'kaas', 'kers', 'zon']
 interpreter = tflite.Interpreter(model_path=f"{BASE_DIR}/model.tflite")
 interpreter.allocate_tensors()
 
+
 def get_spectrogram(waveform):
     spectrogram = tf.signal.stft(waveform, frame_length=255, frame_step=128)
     spectrogram = tf.abs(spectrogram)
     spectrogram = spectrogram[..., tf.newaxis]
     return spectrogram[tf.newaxis,...]
 
+
 def is_silent(snd_data):
-    "Returns 'True' if below the 'silent' threshold"
     print(max(snd_data))
     return max(snd_data) < THRESHOLD
 
+
 def normalize(snd_data):
-    "Average the volume out"
     times = float(MAXIMUM)/max(abs(i) for i in snd_data)
 
     r = array('h')
@@ -48,8 +49,8 @@ def normalize(snd_data):
         r.append(int(i*times))
     return r
 
+
 def trim(snd_data):
-    "Trim the blank spots at the start and end"
     def _trim(snd_data):
         snd_started = False
         r = array('h')
@@ -63,25 +64,24 @@ def trim(snd_data):
                 r.append(i)
         return r
 
-    # Trim to the left
     snd_data = _trim(snd_data)
-
-    # Trim to the right
     snd_data.reverse()
     snd_data = _trim(snd_data)
     snd_data.reverse()
     return snd_data
 
-def record():
-    """
-    Record a word or words from the microphone and 
-    return the data as an array of signed shorts.
 
-    Normalizes the audio, trims silence from the 
-    start and end, and pads with 0.5 seconds of 
-    blank sound to make sure VLC et al can play 
-    it without getting chopped off.
-    """
+def add_silence(snd_data):
+    silence = [0] * int((RATE - snd_data.getnframes())/2)
+    r = array('h', silence)
+    r.extend(snd_data)
+    r.extend(silence)
+    while len(r) < RATE:
+        r.extend([0])
+    return r
+
+
+def record():
     p = PyAudio()
     stream = p.open(format=FORMAT, channels=1, rate=RATE,
         input=True, output=True,
@@ -115,10 +115,10 @@ def record():
 
     r = normalize(r)
     r = trim(r)
+    r = add_silence(r)
     return sample_width, r
 
 def record_to_file(path):
-    "Records from the microphone and outputs the resulting data to 'path'"
     sample_width, data = record()
     data = pack('<' + ('h'*len(data)), *data)
 
