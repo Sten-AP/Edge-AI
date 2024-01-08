@@ -17,7 +17,7 @@ tf.random.set_seed(seed)
 random.seed(seed)
 
 MAXIMUM = 16384
-THRESHOLD = 2000
+THRESHOLD = 3000
 CHUNK_SIZE = 1024
 FORMAT = paInt16
 RATE = 44100
@@ -37,7 +37,6 @@ def get_spectrogram(waveform):
 
 
 def is_silent(snd_data):
-    print(max(snd_data))
     return max(snd_data) < THRESHOLD
 
 
@@ -149,7 +148,7 @@ def main():
     # plt.title(prediction)
     # plt.show()
         
-    if confidense > 70:
+    if confidense > 50:
         print(f"Confident enough about {prediction}\n")
         toggle_led(LABELS[index])
     else:
