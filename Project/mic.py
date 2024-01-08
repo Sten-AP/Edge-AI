@@ -71,16 +71,6 @@ def trim(snd_data):
     return snd_data
 
 
-def add_silence(snd_data):
-    silence = [0] * int((RATE - snd_data.getnframes())/2)
-    r = array('h', silence)
-    r.extend(snd_data)
-    r.extend(silence)
-    while len(r) < RATE:
-        r.extend([0])
-    return r
-
-
 def record():
     p = PyAudio()
     stream = p.open(format=FORMAT, channels=1, rate=RATE,
@@ -115,7 +105,6 @@ def record():
 
     r = normalize(r)
     r = trim(r)
-    r = add_silence(r)
     return sample_width, r
 
 def record_to_file(path):
@@ -132,8 +121,16 @@ def record_to_file(path):
 def main():
     input_data = f'{DATASET_PATH}/audio_input.wav'
     input_data = tf.io.read_file(str(input_data))
-    input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1, desired_samples=RATE)
+    input_data, sample_rate = tf.audio.decode_wav(input_data, desired_channels=1)
+
+    fill_data = tf.zeros((int((RATE - input_data.shape[0]) / 2), 1))
+    input_data = tf.concat([fill_data, input_data, fill_data], axis=0)
+
+    while input_data.shape[0] < RATE:
+        input_data = tf.concat([input_data, tf.zeros((1, 1))], axis=0)
+
     input_data = tf.squeeze(input_data, axis=-1)
+
     waveform = get_spectrogram(input_data)
         
     input_details = interpreter.get_input_details()
